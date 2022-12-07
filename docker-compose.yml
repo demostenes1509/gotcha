@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+
+  gasprice:
+    container_name: gasprice
+    hostname: ${USER}
+    build: .
+    command: nest start gasprice --watch
+    working_dir: /usr/src/app
+    ports:
+      - ${GASPRICE_PORT}:${GASPRICE_PORT}
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - redis      
+    networks:
+      - gotcha-local
+      
+  crypto-gas-price:
+    container_name: crypto-gas-price
+    hostname: ${USER}
+    build: .
+    command: nest start crypto-gas-price --watch
+    working_dir: /usr/src/app
+    ports:
+      - ${CRYPTO_GAS_PRICE_PORT}:${CRYPTO_GAS_PRICE_PORT}
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - redis      
+    networks:
+      - gotcha-local
+
+  redis:
+    image: redis:7.0.2
+    container_name: redis
+    volumes:
+      - redis-data:/data
+    ports:
+      - '${REDIS_PORT}:6379'
+    networks:
+      - gotcha-local
+
+volumes:
+  redis-data:
+
+networks:
+  gotcha-local:
+    name: gotcha-network
